@@ -52,7 +52,7 @@ export class VfRemoteService {
         return this[controller];
     }
 
-    public getFn(controller: string, method: string) : (...args: Array<any>) => Promise<any | Error> {
+    public getFn(controller: string, method: string): (...args: Array<any>) => Promise<any | Error> {
         const ctrl = this.getCtrl(controller);
         if(!ctrl.hasOwnProperty(method)) {
             throw `${method} is not an available remote action on ${controller}`;
