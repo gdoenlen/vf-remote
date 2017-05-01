@@ -45,7 +45,7 @@ export class VfRemoteService {
         this.registerMethods();
     }
 
-    public getCtrl(controller: string) : VfRemoteController {
+    public getCtrl(controller: string): VfRemoteController {
         if(!this.hasOwnProperty(controller)) {
             throw `${controller} is not an available remoting controller`;
         }
@@ -53,36 +53,39 @@ export class VfRemoteService {
     }
 
     public getFn(controller: string, method: string) : (...args: Array<any>) => Promise<any | Error> {
-        let ctrl = this.getCtrl(controller);
+        const ctrl = this.getCtrl(controller);
         if(!ctrl.hasOwnProperty(method)) {
             throw `${method} is not an available remote action on ${controller}`;
         }
         return ctrl[method];
     }
 
-    private registerMethods() : void {
+    /**
+     * Finds all @RemoteAction methods from available controllers and adds them as properties on the service.
+     */
+    private registerMethods(): void {
         /*
          * All available controllers with remoting methods sit on this 'actions' object.
          * The properties of this object will be named by the name of the controller.
          * 
          * That is if you have a page controller named: MyController there will be a property
          * called MyController.
-         * actions : { MyController: { } }
+         * actions: { MyController: { } }
          * 
          * We only use this to get the names of available controllers, the data inside of these objects
          * is not relevant.
          */
-        let actions : Object = Visualforce.remoting.last.actions;
-        for(let controller in actions) {
+        const actions: Object = Visualforce.remoting.last.actions;
+        for(const controller in actions) {
             if(!this.hasOwnProperty(controller)) {
                 this[controller] = new VfRemoteController();
             }
             //the actual javascript functions for the controller sit on an object declared in the global window.
-            let wCtrl : Object = window[controller];
-            for(let prop in wCtrl) {
+            const wCtrl: Object = window[controller];
+            for(const prop in wCtrl) {
                 if(wCtrl.hasOwnProperty(prop) && typeof wCtrl[prop] === "function") {
-                    let fn : Function = wCtrl[prop];
-                    let boundFn = fn.bind(wCtrl);
+                    const fn: Function = wCtrl[prop];
+                    const boundFn = fn.bind(wCtrl);
                     this[controller][prop] = this.wrap(boundFn);
                 }
             }
@@ -93,16 +96,12 @@ export class VfRemoteService {
      * Wraps the bound function in another function that will return a promise.
      * Sets up the arguments, callback, and options for the @RemoteAction call
      * 
-     * @param fn
+     * @param fn The visualfore remoting function from the window that will be wrapped
      * @return Promise containing your result or an error.
      */
-    private wrap(fn : Function) : (...args: Array<any>) => Promise<any | Error> {
-        return (...args: Array<any>) : Promise<any | Error> => {
-            let ret : Promise<any | Error> = new Promise((resolve, reject) => {
-                if(args.length === 0) {
-                    args = [];
-                }
-
+    private wrap(fn: Function): (...args: Array<any>) => Promise<any | Error> {
+        return (...args: Array<any>): Promise<any | Error> => {
+            let ret: Promise<any | Error> = new Promise((resolve, reject): void => {
                 let callback = (result: any, event: SFDCEvent) => {
                     if(event.status) {
                         resolve(result);
@@ -119,7 +118,7 @@ export class VfRemoteService {
 
                 fn.apply(null, args);
             });
-
+            
             return ret;
         }
     }
