@@ -110,7 +110,6 @@ export class VfRemoteService {
                         if(event.type === "exception") {
                             err.stack = event.where;
                         }
-                        console.log(err);
                         reject(err);
                     }
                 }
