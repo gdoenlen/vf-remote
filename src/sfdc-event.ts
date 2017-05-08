@@ -28,8 +28,8 @@
  * @author George Doenlen
  */
 export type SFDCEvent = {
-    status: boolean;
-    type: string;
-    message: string;
-    where : string;
+    status: boolean,
+    type: string,
+    message: string,
+    where: string
 }
