@@ -46,7 +46,7 @@ export class VfRemoteService {
     }
 
     public getCtrl(controller: string): VfRemoteController {
-        if(!this.hasOwnProperty(controller)) {
+        if (!this.hasOwnProperty(controller)) {
             throw `${controller} is not an available remoting controller`;
         }
         return this[controller];
@@ -76,14 +76,14 @@ export class VfRemoteService {
          * is not relevant.
          */
         const actions: Object = Visualforce.remoting.last.actions;
-        for(const controller in actions) {
-            if(!this.hasOwnProperty(controller)) {
+        for (const controller in actions) {
+            if (!this.hasOwnProperty(controller)) {
                 this[controller] = new VfRemoteController();
             }
             //the actual javascript functions for the controller sit on an object declared in the global window.
             const wCtrl: Object = window[controller];
-            for(const prop in wCtrl) {
-                if(wCtrl.hasOwnProperty(prop) && typeof wCtrl[prop] === "function") {
+            for (const prop in wCtrl) {
+                if (wCtrl.hasOwnProperty(prop) && typeof wCtrl[prop] === "function") {
                     const fn: Function = wCtrl[prop];
                     const boundFn = fn.bind(wCtrl);
                     this[controller][prop] = this.wrap(boundFn);
@@ -101,13 +101,13 @@ export class VfRemoteService {
      */
     private wrap(fn: Function): (...args: Array<any>) => Promise<any | Error> {
         return (...args: Array<any>): Promise<any | Error> => {
-            let ret: Promise<any | Error> = new Promise((resolve, reject): void => {
-                let callback = (result: any, event: SFDCEvent) => {
-                    if(event.status) {
+            const ret: Promise<any | Error> = new Promise((resolve, reject): void => {
+                const callback = (result: any, event: SFDCEvent) => {
+                    if (event.status) {
                         resolve(result);
                     } else {
-                        let err = new Error(event.message);
-                        if(event.type === "exception") {
+                        const err = new Error(event.message);
+                        if (event.type === "exception") {
                             err.stack = event.where;
                         }
                         reject(err);
