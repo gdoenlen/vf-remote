@@ -18,7 +18,7 @@ import { VfRemoteService } from "./path/to/vf-remote.service";
     styleUrls: ['./example-app.component.css']
 })
 
-export class ExampleAppComponent implements {
+export class ExampleAppComponent {
  
     public constructor(private vfRemote: VfRemoteService) {
 
