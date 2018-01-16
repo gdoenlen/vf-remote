@@ -41,18 +41,18 @@ import { VfRemoteController } from "./vf-remote-controller";
 @Injectable()
 export class VfRemoteService {
 
-    public constructor() { 
+    constructor() { 
         this.registerMethods();
     }
 
-    public getCtrl(controller: string): VfRemoteController {
+    getCtrl(controller: string): VfRemoteController {
         if (!this.hasOwnProperty(controller)) {
             throw `${controller} is not an available remoting controller`;
         }
         return this[controller];
     }
 
-    public getFn(controller: string, method: string): (...args: Array<any>) => Promise<any | Error> {
+    getFn(controller: string, method: string): (...args: Array<any>) => Promise<any | Error> {
         const ctrl = this.getCtrl(controller);
         if(!ctrl.hasOwnProperty(method)) {
             throw `${method} is not an available remote action on ${controller}`;
