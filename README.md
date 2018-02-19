@@ -20,7 +20,7 @@ import { VfRemoteService } from "./path/to/vf-remote.service";
 
 export class ExampleAppComponent {
  
-    public constructor(private vfRemote: VfRemoteService) {
+    constructor(private vfRemote: VfRemoteService) {
 
     }
 }
