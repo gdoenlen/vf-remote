@@ -22,6 +22,11 @@
  *    SOFTWARE.
  */
 
+///<reference path="./visual-force.d.ts"/>
+import { Injectable } from "@angular/core";
+import { SFDCEvent } from "./sfdc-event";
+import { VfRemoteController } from "./vf-remote-controller";
+
 /**
  * This service provides accessbility to all Visualforce @RemoteAction methods that are available in the visualforce page.
  * You use this service by injecting it where you need it and calling the controller/method by
@@ -33,11 +38,6 @@
  * 
  * @author George Doenlen
  */
-///<reference path="./visual-force.d.ts"/>
-import { Injectable } from "@angular/core";
-import { SFDCEvent } from "./sfdc-event";
-import { VfRemoteController } from "./vf-remote-controller";
-
 @Injectable()
 export class VfRemoteService {
 
