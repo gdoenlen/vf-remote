@@ -1,4 +1,4 @@
-/*!
+/*
  *    MIT License
  *
  *    Copyright (c) 2017 George Doenlen
@@ -22,8 +22,7 @@
  *    SOFTWARE.
  */
 
-///<reference path="./visual-force.d.ts"/>
-import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 import { SFDCEvent } from "./sfdc-event";
 import { VfRemoteController } from "./vf-remote-controller";
 
@@ -41,21 +40,21 @@ import { VfRemoteController } from "./vf-remote-controller";
 @Injectable()
 export class VfRemoteService {
 
-    constructor() { 
+    constructor(@Inject('Window') private window: Window) { 
         this.registerMethods();
     }
 
     getCtrl(controller: string): VfRemoteController {
         if (!this.hasOwnProperty(controller)) {
-            throw `${controller} is not an available remoting controller`;
+            throw new Error(`${controller} is not an available remoting controller`);
         }
         return this[controller];
     }
 
     getFn(controller: string, method: string): (...args: Array<any>) => Promise<any | Error> {
         const ctrl = this.getCtrl(controller);
-        if(!ctrl.hasOwnProperty(method)) {
-            throw `${method} is not an available remote action on ${controller}`;
+        if (!ctrl.hasOwnProperty(method)) {
+            throw new Error(`${method} is not an available remote action on ${controller}`);
         }
         return ctrl[method];
     }
@@ -75,15 +74,15 @@ export class VfRemoteService {
          * We only use this to get the names of available controllers, the data inside of these objects
          * is not relevant.
          */
-        const actions: Object = Visualforce.remoting.last.actions;
-        for (const controller in actions) {
+        if (!this.window.hasOwnProperty('Visualforce')) { throw new Error('Visualforce not found!'); }
+        for (const controller in (this.window as any).Visualforce.remoting.last.actions) {
             if (!this.hasOwnProperty(controller)) {
                 this[controller] = new VfRemoteController();
             }
             //the actual javascript functions for the controller sit on an object declared in the global window.
-            const wCtrl: Object = window[controller];
+            const wCtrl: Object = this.window[controller];
             for (const prop in wCtrl) {
-                if (wCtrl.hasOwnProperty(prop) && typeof wCtrl[prop] === "function") {
+                if (wCtrl.hasOwnProperty(prop) && typeof wCtrl[prop] === 'function') {
                     const fn: Function = wCtrl[prop];
                     const boundFn = fn.bind(wCtrl);
                     this[controller][prop] = this.wrap(boundFn);
@@ -107,7 +106,7 @@ export class VfRemoteService {
                         resolve(result);
                     } else {
                         const err = new Error(event.message);
-                        if (event.type === "exception") {
+                        if (event.type === 'exception') {
                             err.stack = event.where;
                         }
                         reject(err);
