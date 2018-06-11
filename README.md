@@ -7,7 +7,31 @@ The service is only dependent upon Injectable from the angular 2 package (@angul
 The only other dependency is that all the files are within the same folder in your project.
 
 ## Usage
-You use this service by injecting it where you need it:
+You use this service by providing the window object in your ngModule of your app:
+
+```typescript
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [
+    { provide: 'Window', useValue: window }
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+and then injecting the service where you need it:
+
 ```typescript
 import { Component } from '@angular/core';
 import { VfRemoteService } from "./path/to/vf-remote.service";
@@ -17,9 +41,7 @@ import { VfRemoteService } from "./path/to/vf-remote.service";
     templateUrl: './example-app.component.html',
     styleUrls: ['./example-app.component.css']
 })
-
-export class ExampleAppComponent {
- 
+export class ExampleAppComponent { 
     constructor(private vfRemote: VfRemoteService) {
 
     }
@@ -36,7 +58,7 @@ or
 
 using the provided getter methods:
 
-```
+```typescript
 let ctrl: VfRemoteController = vfRemote.getCtrl("Controller");
 let fn = vfRemote.getFn("Controller", "method");
 ```
