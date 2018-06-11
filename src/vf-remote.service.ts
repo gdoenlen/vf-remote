@@ -37,7 +37,9 @@ import { VfRemoteController } from "./vf-remote-controller";
  * 
  * @author George Doenlen
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class VfRemoteService {
 
     constructor(@Inject('Window') private window: Window) { 
